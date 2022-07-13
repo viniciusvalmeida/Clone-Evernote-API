@@ -54,8 +54,9 @@ router.put('/:id', withAuth, async(req,res) => {
     if (user){
       user.name = name
       user.password = password
+      user.updated_at = Date.now()
       await user.save()
-      
+
       res.json(user)
     } else
         res.status(404).json({ error: 'User not found' })
