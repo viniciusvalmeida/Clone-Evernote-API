@@ -88,7 +88,7 @@ router.delete('/:id', withAuth, async(req,res) => {
 
         if (note && isOwner(req.user, note)){
             await note.delete()
-            res.status(402).json({ message: 'Note deleted' })
+            res.status(200).json({ message: 'Note deleted' })
         } else
             res.status(403).json({ error: 'Permission denied' })
     } catch (error) {
