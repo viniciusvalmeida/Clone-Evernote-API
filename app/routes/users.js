@@ -44,6 +44,36 @@ router.post('/login', async (req,res)=> {
   }
 })
 
+router.put('/', withAuth, async (req,res) => {
+  const { name, email } = req.body
+
+  try {
+    const user = await User.findOneAndUpdate(
+      { _id: req.user._id },
+      { $set: { name: name, email: email } },
+      { upsert: true, 'new': true }
+    )
+
+    res.json(user)
+  } catch (error) {
+    res.status(401).json({ error: error })
+  }
+})
+
+router.put('/password', withAuth, async (req,res) => {
+  const { password } = req.body
+
+  try {
+    const user = await User.findOneAndUpdate({ _id: req.user._id })
+    user.password = password
+    await user.save()
+
+    res.json(user)
+  } catch (error) {
+    res.status(401).json({ error: error })
+  }
+})
+
 router.put('/:id', withAuth, async(req,res) => {
   const { id } = req.params
   const { name, password } = req.body
@@ -67,6 +97,16 @@ router.put('/:id', withAuth, async(req,res) => {
   }
 })
 
+router.delete('/', withAuth, async (req,res) => {
+  try {
+    const user = await User.findOne({ _id: req.body._id })
+    await user.delete()
+
+    res.json({ message: 'OK' }).status(201)
+  } catch (error) {
+    res.status(500).json({ error: error })
+  }
+})
 
 router.delete('/:id', withAuth, async(req,res) => {
   const { id } = req.params
