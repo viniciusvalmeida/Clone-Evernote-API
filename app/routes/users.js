@@ -50,7 +50,7 @@ router.put('/', withAuth, async (req,res) => {
   try {
     const user = await User.findOneAndUpdate(
       { _id: req.user._id },
-      { $set: { name: name, email: email } },
+      { $set: { name: name, email: email, updated_at: Date.now() } },
       { upsert: true, 'new': true }
     )
 
@@ -66,6 +66,7 @@ router.put('/password', withAuth, async (req,res) => {
   try {
     const user = await User.findOneAndUpdate({ _id: req.user._id })
     user.password = password
+    user.updated_at = Date.now()
     await user.save()
 
     res.json(user)
@@ -99,10 +100,10 @@ router.put('/:id', withAuth, async(req,res) => {
 
 router.delete('/', withAuth, async (req,res) => {
   try {
-    const user = await User.findOne({ _id: req.body._id })
+    const user = await User.findOne({ _id: req.user._id })
     await user.delete()
 
-    res.json({ message: 'OK' }).status(201)
+    res.json({ message: 'User Deleted' }).status(201)
   } catch (error) {
     res.status(500).json({ error: error })
   }
